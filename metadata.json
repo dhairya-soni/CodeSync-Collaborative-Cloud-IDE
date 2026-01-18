@@ -1,0 +1,8 @@
+{
+  "name": "CodeSync",
+  "description": "A high-performance, real-time collaborative IDE featuring secure containerized code execution and static analysis of time complexity.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
