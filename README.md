@@ -1,95 +1,79 @@
-# 🚀 CodeSync: Professional Collaborative Cloud IDE
+#  CodeSync: Professional Collaborative Cloud IDE
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
-![React](https://img.shields.io/badge/react-19-61dafb.svg)
-![Docker](https://img.shields.io/badge/docker-ready-2496ed.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-19-61dafb.svg)](https://react.dev/)
+[![Docker](https://img.shields.io/badge/docker-isolated-2496ed.svg)](https://www.docker.com/)
 
-**CodeSync** is a high-performance, real-time collaborative development environment. It enables multiple developers to synchronize code changes instantly while providing a secure, sandboxed environment for execution and automated algorithmic analysis.
-
----
-
-## 🌟 Key Features
-
-### 🛠️ Real-Time Collaboration
-*   **Synchronized Editing**: Powered by WebSockets and a Redis-backed message broker for sub-100ms synchronization.
-*   **Multi-User Awareness**: Visual indicators for active peers in the development session.
-
-### 🛡️ Secure Execution Sandbox
-*   **Isolated Environments**: User code executes inside ephemeral Docker containers (Alpine Linux base).
-*   **Resource Constraints**: Strict memory limits (128MB) and CPU quotas to prevent resource exhaustion attacks.
-*   **Network Isolation**: Containers are detached from the network to prevent unauthorized data egress.
-
-### 📊 Algorithmic Analysis (AST)
-*   **Time Complexity Estimation**: Static analysis of Python code using Abstract Syntax Trees to estimate Big-O notation.
-*   **Structural Metrics**: Automatic detection of nested loop depth and iterative structures.
+**CodeSync** is a high-performance, real-time collaborative development environment. It bridges the gap between remote collaboration and local development by providing a synchronized editor, secure containerized execution, and automated static analysis of algorithmic efficiency.
 
 ---
 
-## 💻 Tech Stack
+##  Key Technical Features
 
-| Component | Technology |
-| :--- | :--- |
-| **Frontend** | React 19, TypeScript, Tailwind CSS |
-| **Editor Engine** | Monaco Editor (VS Code core) |
-| **Backend API** | FastAPI (Python 3.9) |
-| **State/Sync** | WebSockets, Redis |
-| **Security** | Docker Engine SDK |
+###  Real-Time Collaboration
+*   **WebSocket Engine**: Implements bidirectional communication for instant code synchronization.
+*   **Session Persistence**: Maintains state across connected peers with sub-100ms latency.
 
----
+###  Secure Execution Sandbox (Docker)
+*   **Isolation**: Every execution triggers an ephemeral **Docker** container (Alpine-based) to ensure host system safety.
+*   **Resource Throttling**: Hard-coded limits for user scripts: **128MB RAM** and **50k CPU quota**.
+*   **Network Air-gap**: Containers are spawned with `--network none` to prevent data exfiltration.
 
-## 🏗️ System Architecture
-
-1.  **Client Layer**: React-based UI handles state and editor interactions.
-2.  **Communication Layer**: WebSockets manage the real-time relay of code buffers between peers.
-3.  **Analysis Layer**: The Python backend parses the code into an AST to calculate computational complexity without executing the code.
-4.  **Execution Layer**: Code is written to a temporary volume and mounted into a restricted Docker container for safe execution.
+###  Algorithmic Analysis (AST)
+*   **Static Analysis**: Uses Python's `ast` module to walk the Abstract Syntax Tree.
+*   **Heuristic Engine**: Calculates Big-O complexity (O(1), O(n), O(n²)) and loop-nesting depth without executing the code.
 
 ---
 
-## 🚀 Quick Start (Setup Instructions)
+##  Technical Architecture
+
+1.  **Frontend**: React 19 + TypeScript + Monaco Editor (VS Code's Core).
+2.  **API Layer**: FastAPI (Uvicorn) for high-concurrency handling.
+3.  **Analysis Layer**: AST-based static complexity estimation.
+4.  **Sandbox Layer**: Docker Engine SDK for containerized isolation.
+
+---
+
+##  Installation & Setup
 
 ### Prerequisites
-*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Highly Recommended)
-*   [Node.js](https://nodejs.org/) (v18+)
-*   [Python 3.9+](https://www.python.org/)
+*   **Python 3.12+**
+*   **Node.js 18+**
+*   **Docker Desktop** (Required for the secure sandbox feature)
 
-### Option A: Using Docker Compose (Easiest)
-This is the recommended way to see the full security features in action.
-
-1.  Clone the repository and navigate to the project root.
-2.  Run the orchestration command:
-    ```bash
-    docker-compose up --build
-    ```
-3.  Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Option B: Manual Setup (Local Development)
-If you don't want to use Docker, the system will run in **Insecure Fallback Mode**.
-
-**1. Backend Setup**
+### 1. Backend Setup
 ```bash
+# Navigate to backend directory
 cd backend
+
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+
+# Start the server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-**2. Frontend Setup**
+### 2. Frontend Setup
 ```bash
-# In a new terminal
+# Navigate to frontend directory
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start the development server
 npm run dev
 ```
 
 ---
 
-## 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Future Updates:
+- [ ] **Distributed State**: Integrating **Redis** for persistence across multiple backend instances.
+- [ ] **Cloud Support**: AWS Lambda/Fargate integration for elastic scaling.
+- [ ] **Multi-Language Support**: Expanding sandboxes for Node.js, Go, and C++.
 
----
-
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
