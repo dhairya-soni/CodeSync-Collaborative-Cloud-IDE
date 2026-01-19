@@ -38,7 +38,17 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# PATH UPDATED TO MATCH FRONTEND (added /v1)
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "message": "CodeSync Engine API is running.",
+        "endpoints": {
+            "execution": "/api/v1/execute",
+            "websocket": "/ws/{room_id}"
+        }
+    }
+
 @app.post("/api/v1/execute", response_model=CodeResponse)
 async def run_code(request: CodeRequest):
     try:
