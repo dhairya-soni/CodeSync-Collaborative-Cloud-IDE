@@ -15,9 +15,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# In-memory room manager for simple demo
 class ConnectionManager:
     def __init__(self):
+        # Dict mapping room_id to list of active WebSockets
         self.active_connections: Dict[str, List[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, room_id: str):
@@ -25,6 +25,7 @@ class ConnectionManager:
         if room_id not in self.active_connections:
             self.active_connections[room_id] = []
         self.active_connections[room_id].append(websocket)
+        print(f"[Internal] Peer connected to room: {room_id}")
 
     def disconnect(self, websocket: WebSocket, room_id: str):
         if room_id in self.active_connections:
@@ -34,38 +35,27 @@ class ConnectionManager:
         if room_id in self.active_connections:
             for connection in self.active_connections[room_id]:
                 if connection != exclude:
-                    await connection.send_text(message)
+                    try:
+                        await connection.send_text(message)
+                    except Exception:
+                        # Handle stale connections
+                        pass
 
 manager = ConnectionManager()
 
 @app.get("/")
 async def root():
-    return {
-        "status": "online",
-        "message": "CodeSync Engine API is running.",
-        "endpoints": {
-            "execution": "/api/v1/execute",
-            "websocket": "/ws/{room_id}"
-        }
-    }
+    return {"status": "online", "engine": "CodeSync-v1.5"}
 
 @app.post("/api/v1/execute", response_model=CodeResponse)
 async def run_code(request: CodeRequest):
-    try:
-        # 1. Execute code in sandboxed container
-        output, error = execute_code(request.code)
-        
-        # 2. Analyze complexity via AST
-        complexity_metrics = analyze_complexity(request.code)
-        
-        return {
-            "output": output,
-            "error": error,
-            "complexity": complexity_metrics
-        }
-    except Exception as e:
-        print(f"Execution Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    output, error = execute_code(request.code)
+    complexity_metrics = analyze_complexity(request.code)
+    return {
+        "output": output,
+        "error": error,
+        "complexity": complexity_metrics
+    }
 
 @app.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
@@ -73,6 +63,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     try:
         while True:
             data = await websocket.receive_text()
+            # Broadcast the incoming code change to everyone else in the room
             await manager.broadcast(data, room_id, exclude=websocket)
     except WebSocketDisconnect:
+        manager.disconnect(websocket, room_id)
+    except Exception as e:
+        print(f"WS Error: {e}")
         manager.disconnect(websocket, room_id)
