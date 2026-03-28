@@ -45,16 +45,25 @@ manager = ConnectionManager()
 
 @app.get("/")
 async def root():
-    return {"status": "online", "engine": "CodeSync-v1.5"}
+    return {"status": "online", "engine": "CodeSync-v2.0"}
 
 @app.post("/api/v1/execute", response_model=CodeResponse)
 async def run_code(request: CodeRequest):
-    output, error = execute_code(request.code)
-    complexity_metrics = analyze_complexity(request.code)
+    import time
+    t0 = time.time()
+    output, error = execute_code(request.code, request.language)
+    duration_ms = int((time.time() - t0) * 1000)
+
+    # Only run Python complexity analysis (AST-based)
+    complexity_metrics = None
+    if request.language.lower() == "python":
+        complexity_metrics = analyze_complexity(request.code)
+
     return {
         "output": output,
         "error": error,
-        "complexity": complexity_metrics
+        "duration_ms": duration_ms,
+        "complexity": complexity_metrics,
     }
 
 @app.websocket("/ws/{room_id}")

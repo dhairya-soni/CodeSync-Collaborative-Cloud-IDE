@@ -1,0 +1,290 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600&display=swap');
+
+:root {
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+
+  /* IDE colors */
+  --ide-bg: #0d1117;
+  --ide-surface: #161b22;
+  --ide-surface-2: #1c2128;
+  --ide-border: #30363d;
+  --ide-text: #e6edf3;
+  --ide-muted: #8b949e;
+  --ide-accent: #58a6ff;
+  --ide-green: #3fb950;
+  --ide-red: #f85149;
+  --ide-yellow: #d29922;
+  --ide-purple: #bc8cff;
+  --ide-cyan: #79c0ff;
+  --ide-orange: #ffa657;
+
+  /* Activity bar width */
+  --activity-bar-width: 48px;
+  /* Sidebar width */
+  --sidebar-width: 240px;
+  /* Bottom panel height */
+  --bottom-panel-height: 240px;
+  /* Status bar height */
+  --status-bar-height: 24px;
+  /* Tab bar height */
+  --tab-bar-height: 35px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--ide-bg);
+  color: var(--ide-text);
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Landing page can scroll */
+.landing-page {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Monaco editor fixes */
+.monaco-editor .margin {
+  background: var(--ide-bg) !important;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(22, 27, 34, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(48, 54, 61, 0.8);
+}
+
+.glass-strong {
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(48, 54, 61, 0.6);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 50%, #79c0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-green {
+  background: linear-gradient(135deg, #3fb950 0%, #79c0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated gradient border */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #58a6ff, #bc8cff, #79c0ff);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+  opacity: 1;
+}
+
+/* Noise texture overlay */
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Syntax highlight colors for code blocks */
+.token-keyword { color: #ff7b72; }
+.token-string { color: #a5d6ff; }
+.token-comment { color: #8b949e; font-style: italic; }
+.token-function { color: #d2a8ff; }
+.token-number { color: #79c0ff; }
+.token-operator { color: #ff7b72; }
+.token-class { color: #ffa657; }
+.token-builtin { color: #79c0ff; }
+
+/* Animated cursor */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+  border-right: 2px solid #58a6ff;
+}
+
+/* IDE layout */
+.ide-layout {
+  display: grid;
+  grid-template-rows: auto 1fr var(--status-bar-height);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.ide-body {
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ide-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ide-editor-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Resizable panel handle */
+.resize-handle {
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background: var(--ide-accent);
+}
+
+.resize-handle-horizontal {
+  height: 4px;
+  background: transparent;
+  cursor: row-resize;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.resize-handle-horizontal:hover,
+.resize-handle-horizontal:active {
+  background: var(--ide-accent);
+}
+
+/* Tab active indicator */
+.tab-active {
+  border-bottom: 1px solid var(--ide-accent);
+  background: var(--ide-bg);
+}
+
+/* Glow effects */
+.glow-blue { box-shadow: 0 0 20px rgba(88, 166, 255, 0.3); }
+.glow-purple { box-shadow: 0 0 20px rgba(188, 140, 255, 0.3); }
+.glow-green { box-shadow: 0 0 20px rgba(63, 185, 80, 0.3); }
+
+/* Landing page blobs */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.blob {
+  animation: blob 7s infinite;
+}
+
+.blob-delay-2 {
+  animation-delay: 2s;
+}
+
+.blob-delay-4 {
+  animation-delay: 4s;
+}
+
+/* Feature card shimmer */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* Code line highlight */
+.code-line-highlight {
+  background: rgba(88, 166, 255, 0.08);
+  border-left: 2px solid #58a6ff;
+}
+
+/* Peer cursor */
+.peer-cursor {
+  position: absolute;
+  width: 2px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.peer-cursor-label {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
